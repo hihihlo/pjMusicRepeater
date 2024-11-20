@@ -1,0 +1,28 @@
+﻿1
+00:00:00,600 --> 00:00:01,666
+unit 2
+
+2
+00:00:02,366 --> 00:00:07,000
+skills check linking sounds examples
+
+3
+00:00:07,466 --> 00:00:09,200
+you can set up the room
+
+4
+00:00:09,600 --> 00:00:10,733
+as it will be
+
+5
+00:00:11,300 --> 00:00:12,666
+how am I going
+
+6
+00:00:13,133 --> 00:00:14,200
+it's all right
+
+7
+00:00:14,666 --> 00:00:16,300
+you need to chill out Ann
+

@@ -1,0 +1,240 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-03-18 10:51+0800\n"
+"PO-Revision-Date: 2024-03-18 10:51+0800\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: zh_TW\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.4.2\n"
+
+#. 須符合 USnte.esntyMain/Sub/Copy 之順序
+msgid "MainSnte"
+msgstr "[主句]"
+
+msgid "SubSnte"
+msgstr "[子句]"
+
+msgid "CopySnte"
+msgstr "[複句]"
+
+msgid "def cnt of {} can't be empty !"
+msgstr "{} 的播放次數必須有值 (但可以是0)"
+
+#. self.btnPlay.SetFocus()
+msgid "Play"
+msgstr "播放"
+
+#. button play for playing or paused
+msgid "Play(ing)"
+msgstr "播放中"
+
+msgid "Play(ed)"
+msgstr "已暫停"
+
+#. type: FmMain
+#. setting of play-count
+msgid "set to 0 //cnt"
+msgstr "播放次數=0"
+
+#. setting of play-count
+msgid "set to Def //cnt"
+msgstr "播放次數=預設"
+
+#. setting of play-count
+msgid "go Prev snte //cnt"
+msgstr "至前一句"
+
+#. setting of play-count
+msgid "go Next snte //cnt"
+msgstr "至下一句"
+
+#. setting of play-count
+msgid "count - 1 //cnt"
+msgstr "播放次數-1"
+
+#. setting of play-count
+msgid "count + 1 //cnt"
+msgstr "播放次數+1"
+
+#. type: FmMain
+#. setting of play-speed
+msgid "set to slowest //spd"
+msgstr "最慢速度"
+
+#. setting of play-speed
+msgid "set to Def //spd"
+msgstr "預設速度"
+
+#. setting of play-speed
+msgid "go Prev snte //spd"
+msgstr "至前一句"
+
+#. setting of play-speed
+msgid "go Next snte //spd"
+msgstr "至下一句"
+
+#. setting of play-speed
+msgid "slower //spd"
+msgstr "更慢"
+
+#. setting of play-speed
+msgid "faster //spd"
+msgstr "更快"
+
+msgid "Music Repeater"
+msgstr ""
+
+msgid "set &All sntes (by def mainSnte/SubSnte/CopySnte)"
+msgstr ""
+
+msgid "set &MainSntes"
+msgstr ""
+
+msgid "set &SubSntes"
+msgstr ""
+
+msgid "set &CopySntes"
+msgstr ""
+
+msgid "set sntes to current &def setting..."
+msgstr ""
+
+msgid "&Batch change"
+msgstr ""
+
+msgid "cur Cnt"
+msgstr ""
+
+msgid "defMain"
+msgstr "預設主句"
+
+msgid "0"
+msgstr ""
+
+msgid "50%"
+msgstr ""
+
+msgid "60%"
+msgstr ""
+
+msgid "65%"
+msgstr ""
+
+msgid "75%"
+msgstr ""
+
+msgid "100%"
+msgstr ""
+
+msgid "125%"
+msgstr ""
+
+msgid "150%"
+msgstr ""
+
+msgid "175%"
+msgstr ""
+
+msgid "defSub"
+msgstr "預設子句"
+
+msgid "defCopy"
+msgstr "預設複句"
+
+msgid "EndMode: "
+msgstr ""
+
+msgid "Stop"
+msgstr ""
+
+msgid "Next"
+msgstr ""
+
+msgid "RepNum"
+msgstr ""
+
+msgid "RepForEver"
+msgstr ""
+
+msgid "left"
+msgstr ""
+
+msgid "right"
+msgstr ""
+
+msgid "top"
+msgstr ""
+
+msgid "bottom"
+msgstr ""
+
+msgid "tip :"
+msgstr ""
+
+msgid "Note : "
+msgstr ""
+
+msgid "frame_1"
+msgstr ""
+
+msgid "button_1"
+msgstr ""
+
+msgid "button_1_long"
+msgstr ""
+
+msgid "speed"
+msgstr "速度"
+
+msgid "cnt"
+msgstr "次數"
+
+msgid "original text"
+msgstr "原文"
+
+msgid "translated text"
+msgstr "譯文"
+
+msgid "len"
+msgstr "長度"
+
+msgid "note"
+msgstr "筆記"
+
+#. function/hotkey of hotkey tip title
+msgid "function"
+msgstr "功能"
+
+msgid "hotkey"
+msgstr "快速鍵"
+
+msgid "speed dec"
+msgstr "減速"
+
+msgid "speed add"
+msgstr "加速"
+
+#. play count dec
+msgid "count dec"
+msgstr "次數-1"
+
+#. play count add
+msgid "count add"
+msgstr "次數+1"
+
+msgid "toggle play/pause"
+msgstr "播放/暫停"
+
+msgid "highlight color of selected text"
+msgstr ""

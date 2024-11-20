@@ -1,0 +1,66 @@
+!UInfUnit
+utspeed: 1.0
+lSnte:
+  - bgn: 0.6
+    end: 1.666
+    cont: unit 2
+    note: ''
+    speed: 1.0
+    plcnt: 3
+    lSub: []
+  - bgn: 2.366
+    end: 7.0
+    cont: skills check linking sounds examples
+    note: ''
+    speed: 1.0
+    plcnt: 3
+    lSub:
+      - bgn: 3.8484373189256913
+        end: 4.3927173283219805
+        cont: ''
+        note: ''
+        speed: 0.5
+        plcnt: 3
+        lSub: []
+      - bgn: 5.780631352282516
+        end: 6.3022330279539585
+        cont: ''
+        note: ''
+        speed: 1
+        plcnt: 3
+        lSub: []
+  - bgn: 7.466
+    end: 9.2
+    cont: you can set up the room
+    note: ''
+    speed: 1.0
+    plcnt: 3
+    lSub: []
+  - bgn: 9.6
+    end: 10.733
+    cont: as it will be
+    note: ''
+    speed: 2.25
+    plcnt: 3
+    lSub: []
+  - bgn: 11.3
+    end: 12.666
+    cont: how am I going
+    note: ''
+    speed: 1.0
+    plcnt: 3
+    lSub: []
+  - bgn: 13.133
+    end: 14.2
+    cont: it's all right
+    note: ''
+    speed: 1.0
+    plcnt: 3
+    lSub: []
+  - bgn: 14.666
+    end: 16.3
+    cont: you need to chill out Ann
+    note: ''
+    speed: 1.0
+    plcnt: 3
+    lSub: []

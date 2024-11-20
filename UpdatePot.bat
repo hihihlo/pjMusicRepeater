@@ -1,0 +1,1 @@
+start "" "C:\Program Files\Git\git-bash.exe" --cd="C:/DriveD/MyPro/DataProc/Parser_Script/Python/+media/+voice/pjMusicRepeater"  "UpdatePot.sh"

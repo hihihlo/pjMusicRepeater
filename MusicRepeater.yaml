@@ -1,0 +1,10 @@
+!UInfApp
+lang:
+lDefSntePlcnt:
+  - 2
+  - 2
+  - 1
+lDefSnteSpeed:
+  - 1.0
+  - 0.5
+  - 0.65

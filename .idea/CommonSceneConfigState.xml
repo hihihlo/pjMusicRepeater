@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SmartInputSourceCommonSceneConfigState">
+    <option name="singleAnnotateScene" value="{&quot;capsLockState&quot;:false,&quot;code&quot;:&quot;singleAnnotate&quot;,&quot;enable&quot;:false,&quot;languageType&quot;:&quot;CHINESE&quot;,&quot;name&quot;:&quot;单行注释&quot;,&quot;tip&quot;:&quot;光标处于单行注释区域切换为中文&quot;}" />
+    <option name="multilineAnnotateScene" value="{&quot;capsLockState&quot;:false,&quot;code&quot;:&quot;multilineAnnotate&quot;,&quot;enable&quot;:false,&quot;languageType&quot;:&quot;CHINESE&quot;,&quot;name&quot;:&quot;多行注释&quot;,&quot;tip&quot;:&quot;光标处于多行注释区域切换为中文&quot;}" />
+  </component>
+</project>
