@@ -948,7 +948,8 @@ class FmMain(Forms_.FmMain):
 
         # gInfFile.LoadVox("foo.mp3")
         # gInfFile.LoadVox(r'c:\DriveD\Text\English\vox\英語聽力有救了_基礎篇\Track 004.mp3')
-        gInfFile.LoadVox(r'c:\DriveD\Text\English\vox\【31版】贏戰3800\3-split_ed_TrimAnySlience\long\Track24-13.mp3')
+        # gInfFile.LoadVox(r'c:\DriveD\Text\English\vox\【31版】贏戰3800\3-split_ed_TrimAnySlience\long\Track24-13.mp3')
+        gInfFile.LoadVox(r'c:\DriveD\Text\English\vox\【31版】贏戰3800\3-split_ed_TrimAnySlience\long\Track24-13xx.mp3')
 
         self.player = TPlayer(self.audio)
         self.rep = TRepInf(self.audio, self.player, self)

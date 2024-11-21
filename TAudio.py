@@ -56,7 +56,9 @@ class TAudio:
     def LoadVox_(self, voxFullFna):
         # self.audio_fullFna = "shortMutter.mp3"
         self.audio_fullFna = voxFullFna
-        self.audioSeg = AudioSegment.from_mp3(self.audio_fullFna)
+        try:
+            self.audioSeg = AudioSegment.from_mp3(self.audio_fullFna)
+        except:
         self.sample_width = self.audioSeg.sample_width #2
         self.frame_rate = self.audioSeg.frame_rate
         self.num_channels = self.audioSeg.channels     #1
