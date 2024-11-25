@@ -284,7 +284,8 @@ class TRepInf:
         # selection range, A B point time (float sec)
         self.lSelRangeNarr = [None, None]   # List[typing.Union[None, float]]
 
-        self.audio = audio
+        if not self.audio.isInit:
+            return  #////
         self.__lRepDat = gInfFile.uInfUnit.lSnte   # type: List[USnte]
         self.__SnteNone = USnte(0, 0)
         self.__SnteNone.SetSnteEx(None, None, None, None)
@@ -704,6 +705,8 @@ class TListRep:
         self.zli.InsertColumn(self.rep.ezlLen,     LID("len"), width=40)
         self.zli.InsertColumn(self.rep.ezlNote,    LID("Note"), width=600)
         # self.zli.SetHeaderCustomRenderer(MyUltimateHeaderRenderer(None))
+        if not rep.audio.isInit:
+            return  #////
         print(f'TListRep ctor, snte cnt={self.rep.GetSnteCnt(isMain=False)}')
         for iRow in range(self.rep.GetSnteCnt(isMain=False)):
             self.insertRow(iRow)   # include snteLong/snteMini
@@ -949,7 +952,7 @@ class FmMain(Forms_.FmMain):
         # gInfFile.LoadVox("foo.mp3")
         # gInfFile.LoadVox(r'c:\DriveD\Text\English\vox\英語聽力有救了_基礎篇\Track 004.mp3')
         # gInfFile.LoadVox(r'c:\DriveD\Text\English\vox\【31版】贏戰3800\3-split_ed_TrimAnySlience\long\Track24-13.mp3')
-        gInfFile.LoadVox(r'c:\DriveD\Text\English\vox\【31版】贏戰3800\3-split_ed_TrimAnySlience\long\Track24-13xx.mp3')
+        # gInfFile.LoadVox(r'c:\DriveD\Text\English\vox\【31版】贏戰3800\3-split_ed_TrimAnySlience\long\Track24-13xxx.mp3')
 
         self.player = TPlayer(self.audio)
         self.rep = TRepInf(self.audio, self.player, self)
@@ -965,6 +968,8 @@ class FmMain(Forms_.FmMain):
         self.player.volume = self.slider_AppVol.GetValue()  # init app volume (100=normal)
         AddLogDug('vol={}', self.player.volume)
 
+        if not self.audio.isInit:
+            return  #////
         self._init_MainCtrl()
         self._init_plot()
         self.rep._updMapping()
@@ -1462,6 +1467,14 @@ class FmMain(Forms_.FmMain):
         zed = event.GetEventObject()  #type: wx.TextCtrl
         AddLogDug('[def plcnt] gui->val : edVal={}, snty={}', zed.GetValue(), snty)
         gInfFile.uInfUnit.lDefSntePlcnt[snty] = int(zed.GetValue())
+
+    def mnFileOpen(self, event):  # wxGlade: FmMain.<event_handler>
+        with wx.FileDialog(self, "Open audio file",
+                           wildcard="audio files (*.mp3;*.wav)|*.mp3;*.wav",
+                           style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as dlgFi:
+            if dlgFi.ShowModal() == wx.ID_CANCEL:
+                return  #////
+            fullFna = dlgFi.GetPath()
 
     def mnSetSnte_all(self, event):  # wxGlade: FmMain.<event_handler>
         # print("Event handler 'mnSetSnte_all' not implemented!")

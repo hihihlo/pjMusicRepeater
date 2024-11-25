@@ -53,12 +53,21 @@ class TAudio:
         self.duration = None
         self.times = None
 
+    @property
+    def isInit(self):
+        return self.audio_fullFna is not None
+
     def LoadVox_(self, voxFullFna):
         # self.audio_fullFna = "shortMutter.mp3"
-        self.audio_fullFna = voxFullFna
         try:
-            self.audioSeg = AudioSegment.from_mp3(self.audio_fullFna)
-        except:
+            self.audioSeg = AudioSegment.from_mp3(voxFullFna)
+        except Exception as e:
+            sMsg = f'load audio file fail : {e}\nfile={voxFullFna}'
+            AddLogERR('{}', sMsg)
+            wx.MessageBox( sMsg, 'Music Repeater', wx.OK | wx.ICON_ERROR)
+            self.audio_fullFna = None
+            return False  #////
+        self.audio_fullFna = voxFullFna
         self.sample_width = self.audioSeg.sample_width #2
         self.frame_rate = self.audioSeg.frame_rate
         self.num_channels = self.audioSeg.channels     #1
@@ -79,7 +88,7 @@ class TAudio:
         # print(f"audio data max={np.max(self.audio.audio_data)}, min={np.min(self.audio.audio_data)}")
         self.audioMax = int(np.max(self.audio_data))
         self.audioMin = int(np.min(self.audio_data))
-        return True
+        return True  #////
 
 # Wrap mpv
 class TPlayer:

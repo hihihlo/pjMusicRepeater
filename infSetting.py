@@ -255,8 +255,7 @@ class InfFile:
         return data  # <---seem don't need !?
 
     def LoadVox(self, fullFna):
-        if not self.audio.LoadVox_(fullFna):
-            AddLogERR('not exist vox file : {}', fullFna)
+        if not self.audio.LoadVox_(fullFna):   # log already
             return  #////
         lFna = os.path.splitext(self.audio.audio_fullFna)
         self.fullFna_Unit = pathlib.Path(lFna[0] + ".MusRep")  # ex "vox01.MusRep"
