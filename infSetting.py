@@ -9,6 +9,7 @@ from cusLogger import *
 from utilMisc import *
 import ruamel.yaml
 import srt  # pip install -U srt
+import chardet
 import typing
 from typing import List
 from typing import Optional
@@ -269,7 +270,8 @@ class InfFile:
             AddLogInf('{} NOT exist, ', self.fullFna_Unit)
             self.uInfUnit = UInfUnit()
             self.uInfUnit.lSnte = self.LoadSrtFile()
-            self.yamlUnit.dump(self.uInfUnit, self.fullFna_Unit)
+            with open(self.fullFna_Unit, 'w', encoding='utf-8') as f:
+                self.yamlUnit.dump(self.uInfUnit, f)
 
     def LoadSrtFile(self) -> list:
         # TODO: if self.fullFna_Unit:  this oper will overwrite bgn/end/cont/bNote, are you sure ?
@@ -284,7 +286,9 @@ class InfFile:
             return lInf  #////
 
         AddLogInf('but <{}> exist : auto generate .MusRep from .srt', fnaSrt)
-        with open(fnaSrt, encoding='utf-8-sig') as fi:
+        with open(fnaSrt, 'rb') as fiRaw:
+            rltEnc = chardet.detect(fiRaw.read(1000))
+        with open(fnaSrt, encoding=rltEnc['encoding']) as fi:
             for subtitle in srt.parse(fi):  # type: srt.Subtitle
                 snte = USnte( subtitle.start.total_seconds(), subtitle.end.total_seconds() )
                 snte.cont = subtitle.content
@@ -296,7 +300,8 @@ class InfFile:
 
     def SaveUnit(self):
         AddLogDug('')
-        self.yamlUnit.dump(self.uInfUnit, self.fullFna_Unit)
+        with open(self.fullFna_Unit, 'w', encoding='utf-8') as f:
+            self.yamlUnit.dump(self.uInfUnit, f)
 
     def LoadApp(self):
         # global setting
@@ -307,10 +312,12 @@ class InfFile:
             AddLogInf('{} NOT exist, auto create it', self.fullFna_App)
             self.uInfApp = UInfApp()
             # self.uInfApp.lSnte = self.LoadSrtFile()
-            self.yamlApp.dump(self.uInfApp, self.fullFna_App)
+            with open(self.fullFna_App, 'w', encoding='utf-8') as f:
+                self.yamlApp.dump(self.uInfApp, f)
 
     def SaveApp(self):
         AddLogDug('')
-        self.yamlApp.dump(self.uInfApp, self.fullFna_App)
+        with open(self.fullFna_App, 'w', encoding='utf-8') as f:
+            self.yamlApp.dump(self.uInfApp, f)
 
 gInfFile = InfFile()
