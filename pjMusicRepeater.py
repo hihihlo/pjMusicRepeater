@@ -281,6 +281,8 @@ class TRepInf:
         self.audio = audio
         self.player = player
         self.fmMain = fmMain  #type: FmMain
+        self.reInit()
+
         # selection range, A B point time (float sec)
         self.lSelRangeNarr = [None, None]   # List[typing.Union[None, float]]
 
@@ -708,13 +710,16 @@ class TListRep:
         # self.zli.SetHeaderCustomRenderer(MyUltimateHeaderRenderer(None))
         if not rep.audio.isInit:
             return  #////
-        print(f'TListRep ctor, snte cnt={self.rep.GetSnteCnt(isMain=False)}')
-        for iRow in range(self.rep.GetSnteCnt(isMain=False)):
-            self.insertRow(iRow)   # include snteLong/snteMini
-        print(f'TListRep ctor, zli cnt={self.zli.GetItemCount()}')
-
         self.zli.Bind(wx.EVT_LIST_ITEM_SELECTED, self.onSelect)
         self.zli.Bind(wx.EVT_LIST_ITEM_DESELECTED, self.onUnSelect)
+        self.reInit()
+
+    def reInit(self):
+        AddLogDug(f'TListRep ctor, snte cnt={self.rep.GetSnteCnt(isMain=False)}')
+        self.zli.DeleteAllItems()
+        for iRow in range(self.rep.GetSnteCnt(isMain=False)):
+            self.insertRow(iRow)   # include snteLong/snteMini
+        AddLogDug(f'TListRep ctor, zli cnt={self.zli.GetItemCount()}')
 
     @property
     def bOnSel_TriggerByUser(self):
@@ -952,6 +957,8 @@ class FmMain(Forms_.FmMain):
 
         gInfFile.Init(self.audio)
         self.player = TPlayer(self.audio)
+        self.rep = TRepInf(self.audio, self.player, self)
+        self.lire = TListRep(self.rep, self.zlRep, fm=self)
 
         # gInfFile.LoadVox("foo.mp3")
         # gInfFile.LoadVox(r'c:\DriveD\Text\English\vox\英語聽力有救了_基礎篇\Track 004.mp3')
@@ -960,8 +967,8 @@ class FmMain(Forms_.FmMain):
         self.initNewVox()
 
     def initNewVox(self):
-        self.rep = TRepInf(self.audio, self.player, self)
-        self.lire = TListRep(self.rep, self.zlRep, fm=self)
+        self.rep.reInit()
+        self.lire.reInit()
 
         self.liKeyAlt = TListKeyAlt(self)
         self.msg = TMsgTip(self)
