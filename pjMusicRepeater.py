@@ -364,6 +364,7 @@ class TRepInf:
     def GetSnte_ByInd(self, itop, isub) -> USnte:
         return self.GetSnte_ByInd(UInd(itop, isub))
     def GetSnte_ByRow(self, iRow) -> USnte:
+        # AddLogDug('iRow={}, lRow.cnt={}', iRow, len(self.__lRow2Snte))
         return self.__lRow2Snte[iRow]
     def GetSnteCnt(self, isMain):
         return len(self.__lRepDat)  if isMain else  len(self.__lRow2Snte)
@@ -797,6 +798,8 @@ class TListRep:
         if self.rep.isSelRangeMode:
             self.rep.SelRange_Cancel(bToMain=False, bUpd=True)
         iRow = event.GetIndex()
+        if iRow >= self.rep.GetSnteCnt(False):
+            return  #////
         snte = self.rep.GetSnte_ByRow(iRow)  # ex row=1 時 OnMouse點選 row=0 : 此時此 snte=1, 但 CurSnte_Play 仍=0 !!!
         snte.bNote = self.fmMain.edNote.GetRichBuf_toXml(gInfFile.uInfUnit)
         # AddLogDug('playRow={}, evtRow={}, Rich_to_bNote={}', self.rep.CurSnte_Play.iRow, snte.iRow, snte.bNote)  #bNote type = bytes
@@ -948,6 +951,7 @@ class FmMain(Forms_.FmMain):
         self.audio = TAudio()
 
         gInfFile.Init(self.audio)
+        self.player = TPlayer(self.audio)
 
         # gInfFile.LoadVox("foo.mp3")
         # gInfFile.LoadVox(r'c:\DriveD\Text\English\vox\英語聽力有救了_基礎篇\Track 004.mp3')
@@ -956,7 +960,6 @@ class FmMain(Forms_.FmMain):
         self.initNewVox()
 
     def initNewVox(self):
-        self.player = TPlayer(self.audio)
         self.rep = TRepInf(self.audio, self.player, self)
         self.lire = TListRep(self.rep, self.zlRep, fm=self)
 
