@@ -174,9 +174,9 @@ class TMsgTip:
                 msg = LID("def cnt of {} can't be empty !").format(pair[1])
         if msg == '':
             self.fmMain.ztxtMsg.Hide()
-            AddLogInf('ok')
+            AddLogDug('ok')
         else:
-            AddLogInf('chk msg={}', msg)
+            AddLogDug('chk msg={}', msg)
             msg += ' '
             self.fmMain.ztxtMsg.SetLabel(msg)
             self.fmMain.ztxtMsg.Show(True)
@@ -973,15 +973,15 @@ class FmMain(Forms_.FmMain):
         # gInfFile.LoadVox(r'c:\DriveD\Text\English\vox\【31版】贏戰3800\3-split_ed_TrimAnySlience\long\Track24-13xxx.mp3')
         self.rep = TRepInf(self.audio, self.player, self)
         self.lire = TListRep(self.rep, self.zlRep, fm=self)
-        self.initNewVox()
-
-    def initNewVox(self):
-        self.rep.reInit()
-        self.lire.reInit()
-
         self.liKeyAlt = TListKeyAlt(self)
         self.msg = TMsgTip(self)
         self.timer = wx.Timer(self)
+        self.initNewVox()
+
+    # first call LoadVox, then call this func
+    def initNewVox(self):
+        self.rep.reInit()
+        self.lire.reInit()
 
         self.slider_SysVol.SetValue(self.audio.SysVolume.GetSysVolume())  # get sys volume
         # self.slider_AppVol.SetValue(100)  # init app volume (100=normal)
@@ -991,6 +991,9 @@ class FmMain(Forms_.FmMain):
 
         if not self.audio.isInit:
             return  #////
+        self.timer.Stop()
+        self.player.stop(keep_playlist=False)  # <=== 之後 audio_play() > playFile() 才會載入&播放 新的音檔 !
+
         self._init_MainCtrl()
         self._init_plot()
         self.rep._updMapping()

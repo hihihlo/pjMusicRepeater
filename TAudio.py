@@ -119,7 +119,8 @@ class TPlayer:
     # idle_active == True 的原因 :
     #   - no file is loaded (與是否 pause 無關 !!)
     #   - 整個音檔播完後
-    #   註 : 以上兩情況也會 timepos = None !
+    #   - stop() 後
+    #   註 : 以上情況也會 timepos = None !
     @property
     def idle_active(self):
         return self.player_.idle_active
