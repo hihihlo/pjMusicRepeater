@@ -280,6 +280,10 @@ class InfFile:
         lInf = []
         if not os.path.isfile(fnaSrt):
             AddLogInf('and <{}> NOT exist', fnaSrt)
+            wx.MessageBox(f'load {self.audio.audio_fullFna} OK,\n'
+                          f'but .MusRep or .srt NOT exist !'
+                          f"(many features are unavailable)",
+                          'Music Repeater', wx.OK | wx.ICON_WARNING)
             # 暫時整個音檔為一句, 暫未自動分句
             snte = USnte( 0, self.audio.duration )
             lInf.append(snte)
