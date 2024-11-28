@@ -283,9 +283,16 @@ class TRepInf:
         self.fmMain = fmMain  #type: FmMain
         # selection range, A B point time (float sec)
         self.lSelRangeNarr = [None, None]   # List[typing.Union[None, float]]
+        AddLogDug('fn TRepInf.__init__')
+        self.__lRow2Snte = None
 
+        self.reInit()
+
+    def reInit(self):
         if not self.audio.isInit:
+            AddLogDug('fn TRepInf.reInit -- NOT audio isInit')
             return  #////
+        AddLogDug('fn TRepInf.reInit')
         self.__lRepDat = gInfFile.uInfUnit.lSnte   # type: List[USnte]
         self.__SnteNone = USnte(0, 0)
         self.__SnteNone.SetSnteEx(None, None, None, None)
@@ -706,15 +713,22 @@ class TListRep:
         self.zli.InsertColumn(self.rep.ezlLen,     LID("len"), width=40)
         self.zli.InsertColumn(self.rep.ezlNote,    LID("Note"), width=600)
         # self.zli.SetHeaderCustomRenderer(MyUltimateHeaderRenderer(None))
+        self.zli.Bind(wx.EVT_LIST_ITEM_SELECTED, self.onSelect)
+        self.zli.Bind(wx.EVT_LIST_ITEM_DESELECTED, self.onUnSelect)
         if not rep.audio.isInit:
             return  #////
+
+        self.reInit()
+
+    def reInit(self):
+        if not self.rep.audio.isInit:
+            AddLogDug('fn TListRep.reInit -- NOT audio isInit')
+            return  #////
         print(f'TListRep ctor, snte cnt={self.rep.GetSnteCnt(isMain=False)}')
+        self.zli.DeleteAllItems()
         for iRow in range(self.rep.GetSnteCnt(isMain=False)):
             self.insertRow(iRow)   # include snteLong/snteMini
         print(f'TListRep ctor, zli cnt={self.zli.GetItemCount()}')
-
-        self.zli.Bind(wx.EVT_LIST_ITEM_SELECTED, self.onSelect)
-        self.zli.Bind(wx.EVT_LIST_ITEM_DESELECTED, self.onUnSelect)
 
     @property
     def bOnSel_TriggerByUser(self):
@@ -957,11 +971,13 @@ class FmMain(Forms_.FmMain):
         # gInfFile.LoadVox(r'c:\DriveD\Text\English\vox\英語聽力有救了_基礎篇\Track 004.mp3')
         # gInfFile.LoadVox(r'c:\DriveD\Text\English\vox\【31版】贏戰3800\3-split_ed_TrimAnySlience\long\Track24-13.mp3')
         # gInfFile.LoadVox(r'c:\DriveD\Text\English\vox\【31版】贏戰3800\3-split_ed_TrimAnySlience\long\Track24-13xxx.mp3')
+        self.rep = TRepInf(self.audio, self.player, self)
+        self.lire = TListRep(self.rep, self.zlRep, fm=self)
         self.initNewVox()
 
     def initNewVox(self):
-        self.rep = TRepInf(self.audio, self.player, self)
-        self.lire = TListRep(self.rep, self.zlRep, fm=self)
+        self.rep.reInit()
+        self.lire.reInit()
 
         self.liKeyAlt = TListKeyAlt(self)
         self.msg = TMsgTip(self)
