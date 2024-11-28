@@ -277,12 +277,16 @@ class TRepInf:
                  audio :TAudio,
                  player :TPlayer,
                  fmMain):
+        AddLogDug('fn TRepInf.__init__')
         self.PlayMode_Snte = self.epmNext  # 播完[本句]後的行為
         self.audio = audio
         self.player = player
         self.fmMain = fmMain  #type: FmMain
+        self.__lRow2Snte = []  #type: List[USnte]
         self.reInit()
 
+    def reInit(self):
+        AddLogDug('fn TRepInf.reInit')
         # selection range, A B point time (float sec)
         self.lSelRangeNarr = [None, None]   # List[typing.Union[None, float]]
 
@@ -959,6 +963,8 @@ class FmMain(Forms_.FmMain):
         self.player = TPlayer(self.audio)
         self.rep = TRepInf(self.audio, self.player, self)
         self.lire = TListRep(self.rep, self.zlRep, fm=self)
+        self.msg = TMsgTip(self)
+        self.timer = wx.Timer(self)
 
         # gInfFile.LoadVox("foo.mp3")
         # gInfFile.LoadVox(r'c:\DriveD\Text\English\vox\英語聽力有救了_基礎篇\Track 004.mp3')
@@ -967,12 +973,10 @@ class FmMain(Forms_.FmMain):
         self.initNewVox()
 
     def initNewVox(self):
+        self.timer.Stop()
         self.rep.reInit()
         self.lire.reInit()
-
         self.liKeyAlt = TListKeyAlt(self)
-        self.msg = TMsgTip(self)
-        self.timer = wx.Timer(self)
 
         self.slider_SysVol.SetValue(self.audio.SysVolume.GetSysVolume())  # get sys volume
         # self.slider_AppVol.SetValue(100)  # init app volume (100=normal)
