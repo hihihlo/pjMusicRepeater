@@ -960,7 +960,6 @@ class FmMain(Forms_.FmMain):
     def __init__(self, *args, **kwds):
         AddLogInf('FmMain.init')
         self.resized = False
-        self.initNear_done = False
         Forms_.FmMain.__init__(self, *args, **kwds)
         self.audio = TAudio()
 
@@ -976,29 +975,7 @@ class FmMain(Forms_.FmMain):
         self.liKeyAlt = TListKeyAlt(self)
         self.msg = TMsgTip(self)
         self.timer = wx.Timer(self)
-        self.initNewVox()
 
-    # first call LoadVox, then call this func
-    def initNewVox(self):
-        self.rep.reInit()
-        self.lire.reInit()
-
-        self.slider_SysVol.SetValue(self.audio.SysVolume.GetSysVolume())  # get sys volume
-        # self.slider_AppVol.SetValue(100)  # init app volume (100=normal)
-        self.slider_AppVol.SetValue(20)  # init app volume (100=normal)
-        self.player.volume = self.slider_AppVol.GetValue()  # init app volume (100=normal)
-        AddLogDug('vol={}', self.player.volume)
-
-        if not self.audio.isInit:
-            return  #////
-        self.timer.Stop()
-        self.player.stop(keep_playlist=False)  # <=== 之後 audio_play() > playFile() 才會載入&播放 新的音檔 !
-
-        self._init_MainCtrl()
-        self._init_plot()
-        self.rep._updMapping()
-
-        self.connMove = self.BG_WaveNarr.canvas.mpl_connect('motion_notify_event', self.onMouseMove)
         self.canvasNarr.mpl_connect('draw_event', self.onDraw)
         # self.canvasNarr.mpl_connect('button_press_event', self.on_left_down)
         self.canvasNarr.Bind(wx.EVT_LEFT_DOWN, self.on_MouseLeft_down)
@@ -1015,9 +992,30 @@ class FmMain(Forms_.FmMain):
         # self.canvasNarr.Bind(wx.EVT_CHAR,     self.onKeyDown_canvasNarr)
         self.slider_SysVol.Bind(wx.EVT_SLIDER, self.OnSlider_SysVol)
         self.slider_AppVol.Bind(wx.EVT_SLIDER, self.OnSlider_AppVol)
-        # self.timer.Start(100)  # Timer interval in milliseconds
 
-        self.initNear_done = True
+        self.slider_SysVol.SetValue(self.audio.SysVolume.GetSysVolume())  # get sys volume
+        # self.slider_AppVol.SetValue(100)  # init app volume (100=normal)
+        self.slider_AppVol.SetValue(20)  # init app volume (100=normal)
+        self.player.volume = self.slider_AppVol.GetValue()  # init app volume (100=normal)
+        AddLogDug('vol={}', self.player.volume)
+        self.btnPlay.SetFocus()  # see TListKeyAlt
+
+        # self.initNewVox()
+
+    # first call LoadVox, then call this func
+    def initNewVox(self):
+        if not self.audio.isInit:
+            return  #////
+        self.timer.Stop()
+        self.player.stop(keep_playlist=False)  # <=== 之後 audio_play() > playFile() 才會載入&播放 新的音檔 !
+        self.rep.reInit()
+        self.lire.reInit()
+        self._init_plot()
+        self._init_MainCtrl()
+        self.connMove = self.BG_WaveNarr.canvas.mpl_connect('motion_notify_event', self.onMouseMove)
+        self.rep._updMapping()
+
+        # self.timer.Start(100)  # Timer interval in milliseconds
 
         # self.btnPlay.SetFocus()
         self.btnPlay.SetLabel(LID("Play"))
@@ -1358,7 +1356,9 @@ class FmMain(Forms_.FmMain):
         AddLogDug('focus_name={}, class={}', wnd.Name, wnd.ClassName)
         if modifiers == wx.WXK_NONE:
             if nCode == wx.WXK_ESCAPE:
-                if self.rep.SelRange_Cancel(bToMain=False, bUpd=True):
+                if not self.audio.isInit:
+                    self.on_SysClose(event)
+                elif self.rep.SelRange_Cancel(bToMain=False, bUpd=True):
                     pass  # to cancel SelRange
                 elif fmBase.FmSpdCntBase.DlgShowing:
                     pass  # to close Dlg
@@ -1432,7 +1432,7 @@ class FmMain(Forms_.FmMain):
 
     def on_SysClose(self, event):
         self.timer.Stop()
-        if self.connMove:
+        if hasattr(self, 'connMove') and self.connMove:
             self.BG_WaveNarr.canvas.mpl_disconnect(self.connMove)
         # if result == wx.ID_YES:
         #     event.Skip()  # 繼續處理關閉事件
