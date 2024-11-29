@@ -85,7 +85,14 @@ class _CallerFunctionFilter(logging.Filter):
             #   !!<module 'inspect' from 'C:\\Program Files\\Python39\\lib\\inspect.py'>!!C:\Program Files\Python39\lib\site-packages\wx\lib\agw\ultimatelistctrl.py!!
             #   !!<module 'inspect' from 'C:\\Program Files\\Python39\\lib\\inspect.py'>!!C:\DriveD\MyPro\DataProc\Parser_Script\Python\+media\+voice\pjMusicRepeater\pjMusicRepeater.py!!
             if m.filename.lower().find(sSysPath) < 0:
-                liName.append(m.function)
+                class_name = m.frame.f_locals.get('self', None)
+                if class_name is not None:
+                    class_name = class_name.__class__.__qualname__
+                else:  # 如果沒有找到 self，嘗試從 globals 中獲取
+                    class_name = m.frame.f_globals.get('__name__', '?')
+                oneName = f"{class_name}.{m.function}"
+                liName.append(oneName)
+                # liName.append(m.function)
         fuName = ' / '.join(liName[:])
         record.caller_function = f'<{fuName}>'
         return True
