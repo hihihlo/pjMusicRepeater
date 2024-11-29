@@ -963,7 +963,7 @@ class FmMain(Forms_.FmMain):
         Forms_.FmMain.__init__(self, *args, **kwds)
         self.audio = TAudio()
 
-        gInfFile.Init(self.audio)
+        gInfFile.Init(self.audio, self)
         self.player = TPlayer(self.audio)
 
         # gInfFile.LoadVox("foo.mp3")

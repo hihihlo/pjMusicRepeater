@@ -216,12 +216,14 @@ class InfFile:
     NoYamlTag = ruamel.yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG
     MaxRecentCnt = 15
     def __init__(self):
+        AddLogDug('SysInit')
         AddLogInf('InfFile.__init__')
         self.fullFna_App = pathlib.Path(r'.\MusicRepeater.yaml')
         self.fullFna_Unit = None    #type: Optional[pathlib.Path]
-        self.audio = None      #type: Optional[TAudio]    # init later in Init()
-        self.uInfApp  = None   #type: Optional[UInfApp]
-        self.uInfUnit = None   #type: Optional[UInfUnit]
+        self.audio = None       #type: Optional[TAudio]    # init later in Init()
+        self.uInfApp  = None    #type: Optional[UInfApp]
+        self.uInfUnit = None    #type: Optional[UInfUnit]
+        self.menuBar = None  #type: Optional[wx.MenuBar]
 
         self.yamlApp = ruamel.yaml.YAML()  # ruamel-yaml obj
         self.yamlApp.indent(mapping=2, sequence=4, offset=2)
@@ -233,10 +235,12 @@ class InfFile:
         self.yamlUnit.constructor.add_constructor(InfFile.NoYamlTag, InfFile.frYaml_USnte)
         self.yamlUnit.register_class(UInfUnit)
 
-        self.LoadApp()
 
-    def Init(self, audio : TAudio):
+    def Init(self, audio : TAudio, fmMain):
+        AddLogDug('SysInit')
         self.audio = audio
+        self.menuBar = fmMain.fmMain_menubar
+        self.LoadApp()
 
     @staticmethod
     def toYaml_USnte(representer, node):
@@ -277,22 +281,32 @@ class InfFile:
             if self.uInfUnit.lSnte:
                 with open(self.fullFna_Unit, 'w', encoding='utf-8') as f:
                     self.yamlUnit.dump(self.uInfUnit, f)
-                    mItem = fmMain.fmMain_menubar.menuRecentFiles
-                    self._updateRecent(fmMain, self.uInfApp.lRecentFiles, self.MaxRecentCnt, fullFna)
-                    self._updateRecent(fmMain, self.uInfApp.lRecentFolders, self.MaxRecentCnt, os.path.dirname(fullFna))
-                    self.SaveApp()
             else:   # is [], do NOT create .MusRep
-                pass   # TODO: audio.LoadVox_(previous file)
+                return   #//// TODO: audio.LoadVox_(previous file)
+        # mItem =
+        self._updateRecent(None, self.uInfApp.lRecentFiles, self.MaxRecentCnt, fullFna)
+        # self._updateRecent(fmMain, self.uInfApp.lRecentFolders, self.MaxRecentCnt, os.path.dirname(fullFna))
+        self.SaveApp()
 
-    def _updateRecent(selfi, mItem: wx.MenuItem, lOut: List[str], nMaxCnt, sGoal: str):
+    def _updateRecent(self, mItem: wx.MenuItem, lOut: List[str], nMaxCnt, sGoal: str):
         # or maybe use wx.FileHistory
-        if sGoal in lOut:
-            del lOut[lOut.index(sGoal)]
-        lOut.insert(0, sGoal)
+        if sGoal:
+            if sGoal in lOut:
+                del lOut[lOut.index(sGoal)]
+            lOut.insert(0, sGoal)
         while len(lOut) > nMaxCnt:
             lOut.pop()
-        im = fmMain.fmMain_menubar.FindMenu('File')
-        # mItem.cle
+        im = self.menuBar.FindMenu('File')
+        menuFile = self.menuBar.GetMenu(im)  #type: wx.Menu
+        idm = menuFile.FindItem('Recent Files')
+        menuRecent = menuFile.FindItemById(idm)  #type: wx.MenuItem
+        AddLogDug('id={}, cap=<{}>', idm, menuRecent.ItemLabelText)
+        AddLogDug('FindMenuItem id={}', self.menuBar.FindMenuItem('File', 'Recent Files'))  # Recent F&iles
+        menuRecent = menuRecent.GetSubMenu()  #type: wx.Menu
+        while menuRecent.GetMenuItemCount() > 0:
+            menuRecent.DestroyItem(menuRecent.GetMenuItems()[0])
+        for m in lOut:
+            menuRecent.Append(wx.ID_ANY, m)
 
     def _LoadSrtFile(self) -> list:
         # TODO: if self.fullFna_Unit:  this oper will overwrite bgn/end/cont/bNote, are you sure ?
@@ -330,16 +344,18 @@ class InfFile:
             self.yamlUnit.dump(self.uInfUnit, f)
 
     def LoadApp(self):
+        AddLogDug('SysInit')
         # global setting
         if self.fullFna_App.exists():
             self.uInfApp  = self.yamlApp.load(self.fullFna_App)   #type: # Optional[UInfApp]
             AddLogDug('{} loaded', self.fullFna_App)
-        else:    # 由 .srt 建立新的對應設定檔
+        else:   
             AddLogInf('{} NOT exist, auto create it', self.fullFna_App)
             self.uInfApp = UInfApp()
             # self.uInfApp.lSnte = self._LoadSrtFile()
             with open(self.fullFna_App, 'w', encoding='utf-8') as f:
                 self.yamlApp.dump(self.uInfApp, f)
+        self._updateRecent(None, self.uInfApp.lRecentFiles, self.MaxRecentCnt, None)
 
     def SaveApp(self):
         AddLogDug('')
