@@ -60,7 +60,7 @@ class USnte:  # USentence
         # 不需 write to yaml 的資訊 皆集中於 pEx object 內
         self.pEx = USnteEx(None, None, None, None)   #type: USnteEx
         # AddLogDug('USnte() ctor, .pEx={}', self.pEx)
-        # <<注意>> : 隨後 LoadSrtFile > from_yaml > 將會使 pEx = None !! 即 pEx 在初始化階段可能為 None !!
+        # <<注意>> : 隨後 _LoadSrtFile > from_yaml > 將會使 pEx = None !! 即 pEx 在初始化階段可能為 None !!
     def __repr__(self):
         if self.pEx is None:  # when init_ing...
             return f' USnte(bgn={self.bgn:.2f}, end={self.end:.2f}, pEx=None)'
@@ -190,6 +190,9 @@ class UInfApp:
         self.lDefSnteSpeed[USnte.esntySub] = 0.5
         self.lDefSnteSpeed[USnte.esntyCopy] = 0.65
 
+        self.lRecentFiles = []
+        self.lRecentFolders = []
+
 
 # - track/unit info, 每個音檔 對應一個的 yaml info
 # - ( this class should be inside InfFile )
@@ -211,6 +214,7 @@ class UInfUnit:
 
 class InfFile:
     NoYamlTag = ruamel.yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG
+    MaxRecentCnt = 15
     def __init__(self):
         AddLogInf('InfFile.__init__')
         self.fullFna_App = pathlib.Path(r'.\MusicRepeater.yaml')
@@ -255,7 +259,7 @@ class InfFile:
         # AddLogDug('## snte= {}', snte)
         return data  # <---seem don't need !?
 
-    def LoadVox(self, fullFna):
+    def LoadVox(self, fullFna, fmMain):
         if not self.audio.LoadVox_(fullFna):   # log already
             return  #////
         lFna = os.path.splitext(self.audio.audio_fullFna)
@@ -269,11 +273,28 @@ class InfFile:
         else:    # 由 .srt 建立新的對應設定檔
             AddLogInf('{} NOT exist, ', self.fullFna_Unit)
             self.uInfUnit = UInfUnit()
-            self.uInfUnit.lSnte = self.LoadSrtFile()
-            with open(self.fullFna_Unit, 'w', encoding='utf-8') as f:
-                self.yamlUnit.dump(self.uInfUnit, f)
+            self.uInfUnit.lSnte = self._LoadSrtFile()
+            if self.uInfUnit.lSnte:
+                with open(self.fullFna_Unit, 'w', encoding='utf-8') as f:
+                    self.yamlUnit.dump(self.uInfUnit, f)
+                    mItem = fmMain.fmMain_menubar.menuRecentFiles
+                    self._updateRecent(fmMain, self.uInfApp.lRecentFiles, self.MaxRecentCnt, fullFna)
+                    self._updateRecent(fmMain, self.uInfApp.lRecentFolders, self.MaxRecentCnt, os.path.dirname(fullFna))
+                    self.SaveApp()
+            else:   # is [], do NOT create .MusRep
+                pass   # TODO: audio.LoadVox_(previous file)
 
-    def LoadSrtFile(self) -> list:
+    def _updateRecent(selfi, mItem: wx.MenuItem, lOut: List[str], nMaxCnt, sGoal: str):
+        # or maybe use wx.FileHistory
+        if sGoal in lOut:
+            del lOut[lOut.index(sGoal)]
+        lOut.insert(0, sGoal)
+        while len(lOut) > nMaxCnt:
+            lOut.pop()
+        im = fmMain.fmMain_menubar.FindMenu('File')
+        # mItem.cle
+
+    def _LoadSrtFile(self) -> list:
         # TODO: if self.fullFna_Unit:  this oper will overwrite bgn/end/cont/bNote, are you sure ?
         lFna = os.path.splitext(self.audio.audio_fullFna)
         fnaSrt = lFna[0] + ".srt"
@@ -284,6 +305,7 @@ class InfFile:
                           f'but .MusRep or .srt NOT exist !'
                           f"(many features are unavailable)",
                           'Music Repeater', wx.OK | wx.ICON_WARNING)
+            # TODO: do you want open it still, if no : return []
             # 暫時整個音檔為一句, 暫未自動分句
             snte = USnte( 0, self.audio.duration )
             lInf.append(snte)
@@ -315,7 +337,7 @@ class InfFile:
         else:    # 由 .srt 建立新的對應設定檔
             AddLogInf('{} NOT exist, auto create it', self.fullFna_App)
             self.uInfApp = UInfApp()
-            # self.uInfApp.lSnte = self.LoadSrtFile()
+            # self.uInfApp.lSnte = self._LoadSrtFile()
             with open(self.fullFna_App, 'w', encoding='utf-8') as f:
                 self.yamlApp.dump(self.uInfApp, f)
 

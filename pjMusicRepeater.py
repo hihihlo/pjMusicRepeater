@@ -999,6 +999,8 @@ class FmMain(Forms_.FmMain):
         self.player.volume = self.slider_AppVol.GetValue()  # init app volume (100=normal)
         AddLogDug('vol={}', self.player.volume)
         self.btnPlay.SetFocus()  # see TListKeyAlt
+        self.Maximize()
+        self.Show(True)
 
         # self.initNewVox()
 
@@ -1026,8 +1028,8 @@ class FmMain(Forms_.FmMain):
 
         self.tmpUnitTest()
 
-        self.Show(True)
         self.Maximize()
+        self.Show(True)
         self.resized = True
         self.OnIdle(None)
         self.Bind(wx.EVT_SIZE, self.OnFrameResize)
@@ -1499,8 +1501,11 @@ class FmMain(Forms_.FmMain):
             if dlgFi.ShowModal() == wx.ID_CANCEL:
                 return  #////
             fullFna = dlgFi.GetPath()
-        gInfFile.LoadVox(fullFna)
+        gInfFile.LoadVox(fullFna, self)
         self.initNewVox()
+        event.Skip()
+
+
 
     def mnSetSnte_all(self, event):  # wxGlade: FmMain.<event_handler>
         # print("Event handler 'mnSetSnte_all' not implemented!")
