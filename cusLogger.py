@@ -67,9 +67,15 @@ class _CallerFunctionFilter(logging.Filter):
     def filter(self, record):
         stack = inspect.stack()  # stack[0]=目前函數名, [1]=上層, [2]=更上層, ...
         record.levelname = record.levelname[:3]
-        sSysPath = r'c:\Program Files\Python'.lower()  # C:\Program Files\Python39\lib\...
+        lExclPath = [
+            r'c:\Program Files\Python'.lower(),  # C:\Program Files\Python39\lib\...
+            'frozen importlib',   # 'frozen importlib._bootstrap',  'frozen importlib._bootstrap_external'
+        ]
         lExclFucName = ['AddLogDug', 'AddLogInf', '_custom_excepthook', '_LogCustomArg',
                         '_log', 'debug', 'info', 'MainLoop', '<module>', 'filter', 'handle', 'callHandlers']
+        lExclClass = [
+            'SourceFileLoader', 'importlib',
+        ]
         liObjAll = [m for m in stack[::-1]  if m.function not in lExclFucName]
         # print(f"* {' > '.join([m.function for m in liObjAll])}")  #原始呼叫階層
         # 原始 'OnMouse > ReverseHighlight > HighlightLine > SendNotify > onSelect'
@@ -84,17 +90,25 @@ class _CallerFunctionFilter(logging.Filter):
             # print(f'!!{module}!!{m.filename}!!')
             #   !!<module 'inspect' from 'C:\\Program Files\\Python39\\lib\\inspect.py'>!!C:\Program Files\Python39\lib\site-packages\wx\lib\agw\ultimatelistctrl.py!!
             #   !!<module 'inspect' from 'C:\\Program Files\\Python39\\lib\\inspect.py'>!!C:\DriveD\MyPro\DataProc\Parser_Script\Python\+media\+voice\pjMusicRepeater\pjMusicRepeater.py!!
-            if m.filename.lower().find(sSysPath) < 0:
-                class_name = m.frame.f_locals.get('self', None)
-                if class_name is not None:
-                    class_name = class_name.__class__.__qualname__
-                else:  # 如果沒有找到 self，嘗試從 globals 中獲取
-                    class_name = m.frame.f_globals.get('__name__', '?')
-                oneName = f"{class_name}.{m.function}"
-                liName.append(oneName)
-                # liName.append(m.function)
+            fina = m.filename.lower()
+            bExclPath = False
+            for sPath in lExclPath:
+                if fina.find(sPath) >= 0:
+                    bExclPath = True
+                    break  #////
+            if bExclPath:
+                # print(f'XXX CLASS={class_name}, FNA={fina}')
+                continue  #////
+            class_name = m.frame.f_locals.get('self', None)
+            if class_name is None:  # 如果沒有找到 self，嘗試從 globals 中獲取
+                class_name = m.frame.f_globals.get('__name__', '')
+            else:
+                class_name = class_name.__class__.__qualname__
+            if class_name not in lExclClass:
+                liName.append(f"{class_name}.{m.function}")
+            # print(f'CLASS={class_name}, FNA={m.filename}')
         fuName = ' / '.join(liName[:])
-        record.caller_function = f'<{fuName}>'
+        record.caller_function = f'`<{fuName}>'
         return True
 
 # if TCustomLog.SetLogFile('./foo.log') has ever been called  ==> log to console & foo.log
@@ -102,7 +116,7 @@ class _CallerFunctionFilter(logging.Filter):
 class TCustomLog:
     _logger = logging.getLogger(__name__)
     _logger.setLevel(logging.DEBUG)  ##
-    _formatter = logging.Formatter('[%(asctime)s %(levelname)s] %(caller_function)s %(message)s')
+    _formatter = logging.Formatter('[%(asctime)s %(levelname)s] %(caller_function)s\n  %(message)s')
 
     _handlerConsole = logging.StreamHandler()
     _handlerConsole.setLevel(logging.INFO)  ##
