@@ -290,7 +290,7 @@ class TRepInf:
 
     def reInit(self):
         if not self.audio.isInit:
-            AddLogDug('fn TRepInf.reInit -- NOT audio isInit')
+            AddLogDug('fn TRepInf.reInit -- audio isInit==0')
             return  #////
         AddLogDug('fn TRepInf.reInit')
         self.__lRepDat = gInfFile.uInfUnit.lSnte   # type: List[USnte]
@@ -722,7 +722,7 @@ class TListRep:
 
     def reInit(self):
         if not self.rep.audio.isInit:
-            AddLogDug('fn TListRep.reInit -- NOT audio isInit')
+            AddLogDug('fn TListRep.reInit -- audio isInit==0')
             return  #////
         print(f'TListRep ctor, snte cnt={self.rep.GetSnteCnt(isMain=False)}')
         self.zli.DeleteAllItems()
@@ -937,6 +937,7 @@ class TListKeyAlt:
     def SendAltKey(self, nCode):
         self.CodeSent = nCode
         self.fmMain.canvasWide.SetFocus()
+        AddLogDug('SendAltKey Code={}', nCode)
         KeySm.press(nCode, [KeySm.alt])  # <---
     # focus 切回 UltimateListCtrl
     def DoneAltKey(self, event):
@@ -1418,6 +1419,7 @@ class FmMain(Forms_.FmMain):
         # let menu key can work  when focus on UltimateListCtrl
         elif event.AltDown() and ord('A') <= nCode <= ord('Z'):    # elif modifiers == wx.WXK_ALT:
             self.liKeyAlt.SendAltKey(nCode)
+            # event.Skip()
 
         # if nCode != wx.WXK_UP:
         # event.Skip()  # <--- propagate / 使能繼續傳遞此 event : ex 造成 <Down> 按1下變2下 !!!
@@ -1505,7 +1507,16 @@ class FmMain(Forms_.FmMain):
         self.initNewVox()
         event.Skip()
 
+    def mnRecentFileSelected(self, event):
+        item = event.GetEventObject().FindItemById(event.GetId())
+        menuRecent = item.GetMenu()  #type: wx.Menu
+        index = menuRecent.GetMenuItems().index(item)
+        # AddLogInf(f"You selected: {item.GetItemLabelText()}")
+        # AddLogDug(f'IND={index}')
 
+        gInfFile.LoadVox(gInfFile.uInfApp.lRecentFiles[index], self)
+        self.initNewVox()
+        event.Skip()
 
     def mnSetSnte_all(self, event):  # wxGlade: FmMain.<event_handler>
         # print("Event handler 'mnSetSnte_all' not implemented!")

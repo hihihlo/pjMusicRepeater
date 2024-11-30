@@ -239,6 +239,7 @@ class InfFile:
     def Init(self, audio : TAudio, fmMain):
         AddLogDug('SysInit')
         self.audio = audio
+        self.fmMain = fmMain
         self.menuBar = fmMain.fmMain_menubar
         self.LoadApp()
 
@@ -283,30 +284,34 @@ class InfFile:
                     self.yamlUnit.dump(self.uInfUnit, f)
             else:   # is [], do NOT create .MusRep
                 return   #//// TODO: audio.LoadVox_(previous file)
-        # mItem =
-        self._updateRecent(None, self.uInfApp.lRecentFiles, self.MaxRecentCnt, fullFna)
-        # self._updateRecent(fmMain, self.uInfApp.lRecentFolders, self.MaxRecentCnt, os.path.dirname(fullFna))
+        self._updateFileRecent('Recent Files', self.uInfApp.lRecentFiles, self.MaxRecentCnt, fullFna)
+        self._updateFileRecent('Recent Folders', self.uInfApp.lRecentFolders, self.MaxRecentCnt, os.path.dirname(fullFna))
         self.SaveApp()
 
-    def _updateRecent(self, mItem: wx.MenuItem, lOut: List[str], nMaxCnt, sGoal: str):
-        # or maybe use wx.FileHistory
+    # - if sGoal=None : just update GUI-menu, not update sGoal to lOut  ===> means load setting to GUI-menu
+    # - wxGlade 中, 'Recent Files' / 'Recent Folders' 下須有任一項目, 這2項才能被當成 SubMenu !!!
+    def _updateFileRecent(self, sMenuCaption, lOut: List[str], nMaxCnt, sGoal: str):
+        # from pjMusicRepeater import gApp  # <-- 這列導致 exception !!!
+        from pjMusicRepeater import FmMain
         if sGoal:
             if sGoal in lOut:
                 del lOut[lOut.index(sGoal)]
             lOut.insert(0, sGoal)
         while len(lOut) > nMaxCnt:
             lOut.pop()
-        im = self.menuBar.FindMenu('File')
-        menuFile = self.menuBar.GetMenu(im)  #type: wx.Menu
-        idm = menuFile.FindItem('Recent Files')
-        menuRecent = menuFile.FindItemById(idm)  #type: wx.MenuItem
-        AddLogDug('id={}, cap=<{}>', idm, menuRecent.ItemLabelText)
-        AddLogDug('FindMenuItem id={}', self.menuBar.FindMenuItem('File', 'Recent Files'))  # Recent F&iles
+        # way:
+        #   maybe use wx.FileHistory
+        # way:
+        #   menuFile = self.menuBar.GetMenu(self.menuBar.FindMenu('File'))  #type: # wx.Menu
+        #   menuRecent = menuFile.FindItemById(menuFile.FindItem(sMenuCaption))  #type: # wx.MenuItem
+        menuRecent = self.menuBar.FindItemById(self.menuBar.FindMenuItem('File', sMenuCaption))  #type: wx.MenuItem
         menuRecent = menuRecent.GetSubMenu()  #type: wx.Menu
-        while menuRecent.GetMenuItemCount() > 0:
-            menuRecent.DestroyItem(menuRecent.GetMenuItems()[0])
-        for m in lOut:
-            menuRecent.Append(wx.ID_ANY, m)
+        if lOut:  # 若 lOut 為空, 則保留原功能表內容 (No Recent File)
+            while menuRecent.GetMenuItemCount() > 0:
+                menuRecent.DestroyItem(menuRecent.GetMenuItems()[-1])
+        for i, sCaption in enumerate(lOut):
+            menuItem = menuRecent.Append(wx.ID_ANY, f'{chr(ord("A")+i)}) {sCaption}')
+            self.fmMain.Bind(wx.EVT_MENU, self.fmMain.mnRecentFileSelected, menuItem)
 
     def _LoadSrtFile(self) -> list:
         # TODO: if self.fullFna_Unit:  this oper will overwrite bgn/end/cont/bNote, are you sure ?
@@ -355,7 +360,8 @@ class InfFile:
             # self.uInfApp.lSnte = self._LoadSrtFile()
             with open(self.fullFna_App, 'w', encoding='utf-8') as f:
                 self.yamlApp.dump(self.uInfApp, f)
-        self._updateRecent(None, self.uInfApp.lRecentFiles, self.MaxRecentCnt, None)
+        self._updateFileRecent('Recent Files', self.uInfApp.lRecentFiles, self.MaxRecentCnt, None)
+        self._updateFileRecent('Recent Folders', self.uInfApp.lRecentFolders, self.MaxRecentCnt, None)
 
     def SaveApp(self):
         AddLogDug('')
