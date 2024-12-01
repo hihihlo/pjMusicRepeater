@@ -1001,10 +1001,11 @@ class FmMain(Forms_.FmMain):
         self.player.volume = self.slider_AppVol.GetValue()  # init app volume (100=normal)
         AddLogDug('vol={}', self.player.volume)
         self.btnPlay.SetFocus()  # see TListKeyAlt
+        self._init_plot_First()
+        self._init_MainCtrl_First()
+
         self.Maximize()
         self.Show(True)
-
-        # self.initNewVox()
 
     # first call LoadVox, then call this func
     def initNewVox(self):
@@ -1012,8 +1013,8 @@ class FmMain(Forms_.FmMain):
             return  #////
         self.rep.reInit()
         self.lire.reInit()
-        self._init_plot()
-        self._init_MainCtrl()
+        self._init_plot_ReInit()
+        self._init_MainCtrl_ReInit()
         self.connMove = self.BG_WaveNarr.canvas.mpl_connect('motion_notify_event', self.onMouseMove)
         self.rep._updMapping()
 
@@ -1085,12 +1086,14 @@ class FmMain(Forms_.FmMain):
             # with wx.EventBlocker(self.edBottom):
             self.edBottom.SetValue(str(bot))
 
-    def _init_MainCtrl(self):
+    def _init_MainCtrl_First(self):
         self.NoteBar = MyNoteBar(self)  # Note Toolbar
         self.edNote.Bind(wx.EVT_KILL_FOCUS, self.onNote_UnFocus)
-        # ---------------------------- [def speed]
+
+    def _init_MainCtrl_ReInit(self):
         lzDefSnSpeed = [self.cboDefSn_MainSpeed, self.cboDefSn_SubSpeed, self.cboDefSn_CopySpeed]  # 須符合 USnte.esntyMain/Sub/Copy 之順序
         lSpeedOpt = self.rep.lSpeedOpt
+        # ---------------------------- [def speed]
         for iType, cbo in enumerate(lzDefSnSpeed):
             # -------- val->gui
             cbo.Clear()
@@ -1144,7 +1147,7 @@ class FmMain(Forms_.FmMain):
         self.fmSet_PlayCnt = FmSet_PlayCnt(self, self)
         self.fmSet_Speed   = FmSet_Speed(self, self)
 
-    def _init_plot(self):
+    def _init_plot_First(self):
         self.axesWaveWide = self.canvasWide.figure.add_subplot(111)  #type: plt.Axes
         self.axesWaveNarr = self.canvasNarr.figure.add_subplot(111)  #type: plt.Axes
         # plt.tight_layout()
@@ -1163,8 +1166,10 @@ class FmMain(Forms_.FmMain):
             self.edTop.SetValue(str(pars.top))
             self.edBottom.SetValue(str(pars.bottom))
             # self.edLeft.Thaw(); self.edRight.Thaw(); self.edTop.Thaw(); self.edBottom.Thaw()
-        
+
+    def _init_plot_ReInit(self):
         for axes in [self.axesWaveWide, self.axesWaveNarr]:
+            axes.clear()
             axes.patch.set_facecolor('black')
             axes.plot(self.audio.times, self.audio.audio_data, linewidth=0.5)
             axes.get_yaxis().set_visible(False)  # 不顯示 Y 軸
@@ -1182,6 +1187,8 @@ class FmMain(Forms_.FmMain):
         lineprops['animated'] = True  # for blit, draw_artist() 時才會真正畫
         self.BG_WaveNarr = TBackground(self.canvasNarr, autoSaveBg_OnDraw=True)
         self.BG_WaveWide = TBackground(self.canvasWide, autoSaveBg_OnDraw=True)
+        # self.BG_WaveNarr.clear()
+        # self.BG_WaveWide.clear()
         self.curLine = self.axesWaveNarr.axvline(20, color='#c78541', visible=False, **lineprops)  #type: plt.Line2D
         self.vLine = self.axesWaveNarr.axvline(x=0, color='r', linestyle='--', linewidth=2, **lineprops)  #type: plt.Line2D
 
@@ -1192,6 +1199,8 @@ class FmMain(Forms_.FmMain):
         self.axesWaveWide.add_patch(self.RngBox)  # Rectangle((x, y)=左下角!!, width, height, ...)
         # self.axesWaveWide.draw_artist(self.RngBox)
         self.update_MainSnteRange()
+        # self.BG_WaveNarr.saveToBg()
+        # self.BG_WaveWide.saveToBg()
         # self.lire.SelectRow(self.rep.CurSnte_Play.iRow)
 
     # fast update curLine / vLine
@@ -1473,7 +1482,7 @@ class FmMain(Forms_.FmMain):
         # zed = event.GetEventObject()  #type: wx.TextCtrl
         # value = zed.GetValue()  #type: str
         keycode = event.GetKeyCode()
-        if keycode in [wx.WXK_DELETE, wx.WXK_BACK, wx.WXK_LEFT, wx.WXK_RIGHT, wx.WXK_HOME, wx.WXK_END]\
+        if keycode in [wx.WXK_DELETE, wx.WXK_BACK, wx.WXK_LEFT, wx.WXK_RIGHT, wx.WXK_HOME, wx.WXK_END] \
                 or ord('0') <= keycode <= ord('9'):
             event.Skip()  # <--- propagate / 才能出現於 wx.TextCtrl !!
         else:
