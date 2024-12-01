@@ -1089,30 +1089,6 @@ class FmMain(Forms_.FmMain):
     def _init_MainCtrl_First(self):
         self.NoteBar = MyNoteBar(self)  # Note Toolbar
         self.edNote.Bind(wx.EVT_KILL_FOCUS, self.onNote_UnFocus)
-
-    def _init_MainCtrl_ReInit(self):
-        lzDefSnSpeed = [self.cboDefSn_MainSpeed, self.cboDefSn_SubSpeed, self.cboDefSn_CopySpeed]  # 須符合 USnte.esntyMain/Sub/Copy 之順序
-        lSpeedOpt = self.rep.lSpeedOpt
-        # ---------------------------- [def speed]
-        for iType, cbo in enumerate(lzDefSnSpeed):
-            # -------- val->gui
-            cbo.Clear()
-            for opt in lSpeedOpt:
-                cbo.Append(TAudio.MpvToGuiP(opt))
-            unitSp = gInfFile.uInfUnit.lDefSnteSpeed[iType]
-            nVal = unitSp   if unitSp is not None else   gInfFile.uInfApp.lDefSnteSpeed[iType]
-            cbo.SetSelection( np.abs(lSpeedOpt - nVal).argmin() )   # 若非完全相等, 則會找最接近者
-            # -------- bind (for gui->val)
-            cbo.Bind(wx.EVT_TEXT, lambda evt, snty=iType : self.onEdDefSn_Speed_Changed(evt, snty))
-        # ---------------------------- [def plcnt]
-        for iType, zed in enumerate([self.edDefSn_MainCnt, self.edDefSn_SubCnt, self.edDefSn_CopyCnt]):  # 須符合 USnte.esntyMain/Sub/Copy 之順序
-            # -------- val->gui
-            unitCnt = gInfFile.uInfUnit.lDefSntePlcnt[iType]
-            unitCnt = unitCnt   if unitCnt is not None else   gInfFile.uInfApp.lDefSntePlcnt[iType]
-            zed.SetValue(str(unitCnt))
-            # -------- bind (for gui->val)
-            zed.Bind(wx.EVT_CHAR, self.onEdDefSn_PlCnt_Char)
-            zed.Bind(wx.EVT_TEXT, lambda evt, snty=iType : self.onEdDefSn_PlCnt_Changed(evt, snty))
         # ---------------------------- zHtml_TopTip
         htmlTop = """
             <p>html 測試</p>
@@ -1143,6 +1119,30 @@ class FmMain(Forms_.FmMain):
         htmlRight += htmlRow(LID('toggle play/pause'), 'S')
         htmlRight += '</table>'
         self.zHtml_RightTip.SetPage(htmlRight, '')
+
+    def _init_MainCtrl_ReInit(self):
+        lzDefSnSpeed = [self.cboDefSn_MainSpeed, self.cboDefSn_SubSpeed, self.cboDefSn_CopySpeed]  # 須符合 USnte.esntyMain/Sub/Copy 之順序
+        lSpeedOpt = self.rep.lSpeedOpt
+        # ---------------------------- [def speed]
+        for iType, cbo in enumerate(lzDefSnSpeed):
+            # -------- val->gui
+            cbo.Clear()
+            for opt in lSpeedOpt:
+                cbo.Append(TAudio.MpvToGuiP(opt))
+            unitSp = gInfFile.uInfUnit.lDefSnteSpeed[iType]
+            nVal = unitSp   if unitSp is not None else   gInfFile.uInfApp.lDefSnteSpeed[iType]
+            cbo.SetSelection( np.abs(lSpeedOpt - nVal).argmin() )   # 若非完全相等, 則會找最接近者
+            # -------- bind (for gui->val)
+            cbo.Bind(wx.EVT_TEXT, lambda evt, snty=iType : self.onEdDefSn_Speed_Changed(evt, snty))
+        # ---------------------------- [def plcnt]
+        for iType, zed in enumerate([self.edDefSn_MainCnt, self.edDefSn_SubCnt, self.edDefSn_CopyCnt]):  # 須符合 USnte.esntyMain/Sub/Copy 之順序
+            # -------- val->gui
+            unitCnt = gInfFile.uInfUnit.lDefSntePlcnt[iType]
+            unitCnt = unitCnt   if unitCnt is not None else   gInfFile.uInfApp.lDefSntePlcnt[iType]
+            zed.SetValue(str(unitCnt))
+            # -------- bind (for gui->val)
+            zed.Bind(wx.EVT_CHAR, self.onEdDefSn_PlCnt_Char)
+            zed.Bind(wx.EVT_TEXT, lambda evt, snty=iType : self.onEdDefSn_PlCnt_Changed(evt, snty))
         # ----------------------------
         self.fmSet_PlayCnt = FmSet_PlayCnt(self, self)
         self.fmSet_Speed   = FmSet_Speed(self, self)
