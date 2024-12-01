@@ -1004,6 +1004,8 @@ class FmMain(Forms_.FmMain):
         self._init_plot_First()
         self._init_MainCtrl_First()
 
+        self.Bind(wx.EVT_SIZE, self.OnFrameResize)
+        self.Bind(wx.EVT_IDLE, self.OnIdle)
         self.Maximize()
         self.Show(True)
 
@@ -1029,16 +1031,12 @@ class FmMain(Forms_.FmMain):
 
         self.tmpUnitTest()
 
-        self.Maximize()
-        self.Show(True)
-        self.resized = True
-        self.OnIdle(None)
-        self.Bind(wx.EVT_SIZE, self.OnFrameResize)
-        self.Bind(wx.EVT_IDLE, self.OnIdle)
-
         self.audio_play()  # load vox
         self.rep.PlayPlan()
         self.lire.bOnSel_TriggerByUser = True   # init
+
+        self.resized = True
+        self.OnIdle(None)
 
     def OnFrameResize(self, event):
         # 注意 : 此時 canvas.GetSize() or GetClientSize() 取得值 都是上次的大小, 而非目前新的大小 !!!
@@ -1198,9 +1196,9 @@ class FmMain(Forms_.FmMain):
                                         linewidth=1, edgecolor='r', facecolor='none', animated=True)  # range of Narr, draw in Wide
         self.axesWaveWide.add_patch(self.RngBox)  # Rectangle((x, y)=左下角!!, width, height, ...)
         # self.axesWaveWide.draw_artist(self.RngBox)
+        # self.BG_WaveWide.saveToBg()
         self.update_MainSnteRange()
         # self.BG_WaveNarr.saveToBg()
-        # self.BG_WaveWide.saveToBg()
         # self.lire.SelectRow(self.rep.CurSnte_Play.iRow)
 
     # fast update curLine / vLine
