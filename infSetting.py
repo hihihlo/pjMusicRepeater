@@ -265,6 +265,14 @@ class InfFile:
         return data  # <---seem don't need !?
 
     def LoadVox(self, fullFna, fmMain):
+        if fmMain.isPlaying:
+            fmMain.timer.Stop()
+            fmMain.player.stop(keep_playlist=False)  # <=== 之後 audio_play() > playFile() 才會載入&播放 新的音檔 !
+        # if self.isPlaying:
+        #     self.audio_pause()
+        # else:
+        #     self.audio_play()
+
         if not self.audio.LoadVox_(fullFna):   # log already
             return  #////
         lFna = os.path.splitext(self.audio.audio_fullFna)

@@ -115,7 +115,10 @@ class TPlayer:
         # while self.player_._get_property('core-idle') and (time.time() - tiBgn) <= tiWaitMin:
         #     time.sleep(0.001)
     def stop(self, **kwargs):
+        AddLogDug('PL.stop')
         self.player_.stop(kwargs)
+        # self.player_.wait_for_shutdown(timeout=3)  # will exception !!
+        # self.player_.wait_until_paused(timeout=2)
     # idle_active == True 的原因 :
     #   - no file is loaded (與是否 pause 無關 !!)
     #   - 整個音檔播完後

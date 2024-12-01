@@ -962,6 +962,7 @@ class FmMain(Forms_.FmMain):
         AddLogInf('FmMain.init')
         self.resized = False
         Forms_.FmMain.__init__(self, *args, **kwds)
+        self.__isPlaying   = False
         self.audio = TAudio()
 
         gInfFile.Init(self.audio, self)
@@ -1009,8 +1010,6 @@ class FmMain(Forms_.FmMain):
     def initNewVox(self):
         if not self.audio.isInit:
             return  #////
-        self.timer.Stop()
-        self.player.stop(keep_playlist=False)  # <=== 之後 audio_play() > playFile() 才會載入&播放 新的音檔 !
         self.rep.reInit()
         self.lire.reInit()
         self._init_plot()
@@ -1144,7 +1143,6 @@ class FmMain(Forms_.FmMain):
         # ----------------------------
         self.fmSet_PlayCnt = FmSet_PlayCnt(self, self)
         self.fmSet_Speed   = FmSet_Speed(self, self)
-        self.__isPlaying   = False
 
     def _init_plot(self):
         self.axesWaveWide = self.canvasWide.figure.add_subplot(111)  #type: plt.Axes
