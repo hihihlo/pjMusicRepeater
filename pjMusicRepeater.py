@@ -1037,6 +1037,7 @@ class FmMain(Forms_.FmMain):
 
         self.resized = True
         self.OnIdle(None)
+        self.update_MainSnteRange()
 
     def OnFrameResize(self, event):
         # 注意 : 此時 canvas.GetSize() or GetClientSize() 取得值 都是上次的大小, 而非目前新的大小 !!!
@@ -1196,8 +1197,8 @@ class FmMain(Forms_.FmMain):
                                         linewidth=1, edgecolor='r', facecolor='none', animated=True)  # range of Narr, draw in Wide
         self.axesWaveWide.add_patch(self.RngBox)  # Rectangle((x, y)=左下角!!, width, height, ...)
         # self.axesWaveWide.draw_artist(self.RngBox)
+        # self.update_MainSnteRange()
         # self.BG_WaveWide.saveToBg()
-        self.update_MainSnteRange()
         # self.BG_WaveNarr.saveToBg()
         # self.lire.SelectRow(self.rep.CurSnte_Play.iRow)
 
