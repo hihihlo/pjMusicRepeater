@@ -110,6 +110,7 @@ class TPlayer:
         # tiBgn = time.time()
         self.player_.play(fna)
         self.player_.wait_until_playing(timeout=2)
+        # self.player_.wait_for_playback()
         # to Play, 確保 idle 1->0 : 若等待時間 > tiWaitMin 則放棄, 不再等待 core-idle 變成 0
         # tiWaitMin = 1.0
         # while self.player_._get_property('core-idle') and (time.time() - tiBgn) <= tiWaitMin:
